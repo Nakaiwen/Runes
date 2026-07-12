@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>盧恩符文・靜心一抽</title>
 <meta name="description" content="每日一符與三符陣的盧恩符文抽石工具">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="盧恩符文">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <style>
 :root{
   --paper:#ffffff;
@@ -386,6 +393,10 @@ $("modeDaily").addEventListener("click", ()=>setMode("daily"));
 $("modeSpread").addEventListener("click", ()=>setMode("spread"));
 
 initDaily(false);
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
 </script>
 </body>
 </html>
