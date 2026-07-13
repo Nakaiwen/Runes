@@ -183,6 +183,20 @@ h1{
 }
 .link:hover{color:var(--ink)}
 
+
+@media (max-width:480px){
+  body{padding-left:12px;padding-right:12px}
+  .modes button{padding:12px 20px;font-size:.92rem}
+  .stone img{height:clamp(170px,48vw,230px)}
+  .stone.small img{height:clamp(92px,26vw,130px)}
+  .ritual{font-size:.88rem;letter-spacing:.1em;text-indent:.1em}
+  .hint{font-size:.82rem;letter-spacing:.15em;text-indent:.15em}
+  .card{padding:18px 16px 16px;border-radius:12px}
+  .card h2{font-size:1.45rem}
+  .card .chips span{font-size:.8rem;padding:4px 11px}
+  .card .msg{font-size:.98rem;line-height:2.05}
+  .card .task{font-size:.95rem;line-height:1.9;padding:12px 13px}
+}
 footer{
   margin-top:34px;font-size:.75rem;color:var(--mist);
   letter-spacing:.15em;text-align:center;line-height:2;
@@ -258,6 +272,11 @@ function todayStr(){
   const d = new Date();
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
+function scrollToCard(el){
+  if(!el) return;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  el.scrollIntoView({behavior: reduce ? "auto" : "smooth", block: "start"});
+}
 function cardHTML(r, posLabel){
   const paras = r.deep.split("\n").map(p=>`<p>${p}</p>`).join("");
   const chips = r.keywords.map(k=>`<span>${k}</span>`).join("");
@@ -273,6 +292,7 @@ function cardHTML(r, posLabel){
 /* ── 每日一符 ── */
 const DAILY_KEY = "rune.daily.v1";
 let dailyState = null; // {date, id, revealed}
+let dailyJustFlipped = false;
 
 function loadDaily(){
   try{
@@ -319,6 +339,7 @@ function showDailyResult(){
   $("dailyRitual").style.display = "none";
   $("dailyCard").innerHTML = cardHTML(r);
   $("dailyActions").style.display = "";
+  if(dailyJustFlipped) scrollToCard($("dailyCard").firstElementChild);
 }
 $("dailyStone").addEventListener("click", ()=>{
   if(dailyState.revealed) return;
@@ -326,6 +347,7 @@ $("dailyStone").addEventListener("click", ()=>{
   stone.classList.remove("waiting");
   stone.classList.add("flipped");
   dailyState.revealed = true;
+  dailyJustFlipped = true;
   saveDaily(dailyState);
   setTimeout(showDailyResult, 450);
 });
@@ -369,6 +391,7 @@ function revealSpread(i, btn){
   setTimeout(()=>{
     const r = byId[spread.ids[i]];
     $("spreadCards").insertAdjacentHTML("beforeend", cardHTML(r, POS[i]));
+    scrollToCard($("spreadCards").lastElementChild);
     if(spread.revealed.every(Boolean)){
       $("spreadHint").style.display = "none";
       $("spreadRitual").style.display = "none";
